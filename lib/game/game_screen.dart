@@ -73,17 +73,20 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           Spacer(),
+          // game board
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(width: 16),
               _IncDec(
                 title: 'Bet size',
+                isActive: isActive,
                 onPressed: onBetSize,
               ),
               Spacer(),
               _IncDec(
                 title: 'Number of balls',
+                isActive: isActive,
                 onPressed: onNumber,
               ),
               SizedBox(width: 16),
@@ -147,10 +150,12 @@ class _Tab extends StatelessWidget {
 class _IncDec extends StatefulWidget {
   const _IncDec({
     required this.title,
+    required this.isActive,
     required this.onPressed,
   });
 
   final String title;
+  final bool isActive;
   final void Function(int) onPressed;
 
   @override
@@ -184,14 +189,14 @@ class _IncDecState extends State<_IncDec> {
           height: 44,
           width: 175,
           decoration: BoxDecoration(
-            color: Color(0xff6F18FA),
+            color: widget.isActive ? Color(0xff6F18FA) : Color(0xff22074b),
             borderRadius: BorderRadius.circular(44),
           ),
           child: Row(
             children: [
               SizedBox(width: 16),
               MyButton(
-                onPressed: value == 1
+                onPressed: !widget.isActive || value == 1
                     ? null
                     : () {
                         onChange(false);
@@ -200,7 +205,9 @@ class _IncDecState extends State<_IncDec> {
                 child: Icon(
                   Icons.remove_rounded,
                   size: 30,
-                  color: value == 1 ? Color(0xffAFA5B8) : Colors.white,
+                  color: !widget.isActive || value == 1
+                      ? Color(0xffAFA5B8)
+                      : Colors.white,
                 ),
               ),
               Expanded(
@@ -208,7 +215,8 @@ class _IncDecState extends State<_IncDec> {
                   child: Text(
                     value.toString(),
                     style: TextStyle(
-                      color: Colors.white,
+                      color:
+                          !widget.isActive ? Color(0xffAFA5B8) : Colors.white,
                       fontSize: 16,
                       fontFamily: 'w500',
                     ),
@@ -216,7 +224,7 @@ class _IncDecState extends State<_IncDec> {
                 ),
               ),
               MyButton(
-                onPressed: value == 10
+                onPressed: !widget.isActive || value == 10
                     ? null
                     : () {
                         onChange(true);
@@ -225,7 +233,9 @@ class _IncDecState extends State<_IncDec> {
                 child: Icon(
                   Icons.add_rounded,
                   size: 30,
-                  color: value == 10 ? Color(0xffAFA5B8) : Colors.white,
+                  color: !widget.isActive || value == 10
+                      ? Color(0xffAFA5B8)
+                      : Colors.white,
                 ),
               ),
               SizedBox(width: 16),
