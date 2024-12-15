@@ -1,9 +1,13 @@
 import 'dart:async';
 
-import 'package:fl_6/wheel/wheel_screen.dart';
-import 'package:fl_6/widgets/my_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../blocs/coins/coins_bloc.dart';
+import '../utils.dart';
+import '../wheel/wheel_screen.dart';
+import '../widgets/my_button.dart';
 import '../widgets/my_scaffold.dart';
 import '../widgets/primary_button.dart';
 
@@ -38,32 +42,55 @@ class _DailyBonus extends StatefulWidget {
 }
 
 class _DailyBonusState extends State<_DailyBonus> {
-  bool available = true;
-
   late Timer _timer;
-  late DateTime _currentTime;
+  int timestamp = 0;
+  int seconds = 0;
+
+  Future<void> saveTimestamp() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('timestamp', getTimestamp());
+  }
+
+  Future<void> loadTimestamp() async {
+    final prefs = await SharedPreferences.getInstance();
+    timestamp = prefs.getInt('timestamp') ?? 0;
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    seconds = (timestamp + 86400) - now; // 86400
+    if (seconds < 0) seconds = 0;
+    setState(() {});
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (seconds > 0) {
+          seconds--;
+        } else {
+          _timer.cancel();
+        }
+      });
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final hours = duration.inHours.toString().padLeft(2, '0');
+    final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+    final secs = (duration.inSeconds % 60).toString().padLeft(2, '0');
+    return '$hours:$minutes:$secs';
+  }
 
   @override
   void initState() {
     super.initState();
-    _currentTime = DateTime.now();
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
-      setState(() {
-        _currentTime = DateTime.now();
-      });
-    });
+    loadTimestamp();
+    startTimer();
   }
 
   @override
   void dispose() {
     _timer.cancel();
     super.dispose();
-  }
-
-  String _formatTime(DateTime time) {
-    return "${time.hour.toString().padLeft(2, '0')}:"
-        "${time.minute.toString().padLeft(2, '0')}:"
-        "${time.second.toString().padLeft(2, '0')}";
   }
 
   @override
@@ -98,61 +125,77 @@ class _DailyBonusState extends State<_DailyBonus> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: SizedBox(
-                width: 220,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 10),
-                    Text(
-                      available
-                          ? 'Your daily bonus is available now'
-                          : 'Your daily bonus will be available',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontFamily: 'w700',
+            BlocBuilder<CoinsBloc, CoinsState>(
+              builder: (context, state) {
+                if (state is CoinsLoaded) {
+                  final isAvailable = seconds <= 0;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: SizedBox(
+                      width: 220,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          Text(
+                            isAvailable
+                                ? 'Your daily bonus is available now'
+                                : 'Your daily bonus will be available',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'w700',
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            isAvailable ? '' : _formatTime(seconds),
+                            style: TextStyle(
+                              color: Color(0xffF6D303),
+                              fontSize: 24,
+                              fontFamily: 'w900',
+                            ),
+                          ),
+                          Spacer(),
+                          MyButton(
+                            onPressed: isAvailable
+                                ? () async {
+                                    await showDialog(
+                                      context: context,
+                                      useSafeArea: false,
+                                      barrierDismissible: false,
+                                      builder: (context) {
+                                        return WheelScreen();
+                                      },
+                                    ).then((value) async {
+                                      await saveTimestamp();
+                                      await loadTimestamp();
+                                      startTimer();
+                                    });
+                                  }
+                                : null,
+                            minSize: 24,
+                            child: Text(
+                              'Get Daily Bonus',
+                              style: TextStyle(
+                                color: isAvailable
+                                    ? Color(0xffF6D303)
+                                    : Color(0xffAFA5B8),
+                                fontSize: 20,
+                                fontFamily: 'w700',
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                        ],
                       ),
                     ),
-                    Spacer(),
-                    Text(
-                      _formatTime(_currentTime),
-                      style: TextStyle(
-                        color: Color(0xffF6D303),
-                        fontSize: 24,
-                        fontFamily: 'w900',
-                      ),
-                    ),
-                    Spacer(),
-                    MyButton(
-                      onPressed: available
-                          ? () {
-                              showDialog(
-                                context: context,
-                                useSafeArea: false,
-                                builder: (context) {
-                                  return WheelScreen();
-                                },
-                              );
-                            }
-                          : null,
-                      minSize: 24,
-                      child: Text(
-                        'Get Daily Bonus',
-                        style: TextStyle(
-                          color:
-                              available ? Color(0xffF6D303) : Color(0xffAFA5B8),
-                          fontSize: 20,
-                          fontFamily: 'w700',
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
-              ),
+                  );
+                }
+
+                return Container();
+              },
             ),
           ],
         ),

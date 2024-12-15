@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../blocs/coins/coins_bloc.dart';
 import '../home/home_screen.dart';
-import '../utils.dart';
 import '../widgets/bg.dart';
 import 'onboard_screen.dart';
 
@@ -18,29 +18,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
-  void init() async {
-    final prefs = await SharedPreferences.getInstance();
-    // await prefs.clear();
-    bool isOnboard = prefs.getBool('isOnboard') ?? true;
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        if (mounted) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                logger(isOnboard);
-                return isOnboard ? OnboardScreen() : HomeScreen();
-              },
-            ),
-            (route) => false,
-          );
-        }
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -48,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat();
-    init();
   }
 
   @override
@@ -59,17 +35,39 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Bg(),
-          Center(
-            child: RotationTransition(
-              turns: controller,
-              child: SvgPicture.asset('assets/loader.svg'),
+    return BlocListener<CoinsBloc, CoinsState>(
+      listener: (context, state) {
+        if (state is CoinsLoaded) {
+          Future.delayed(
+            const Duration(seconds: 2),
+            () {
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return state.isOnboard ? OnboardScreen() : HomeScreen();
+                    },
+                  ),
+                  (route) => false,
+                );
+              }
+            },
+          );
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Bg(),
+            Center(
+              child: RotationTransition(
+                turns: controller,
+                child: SvgPicture.asset('assets/loader.svg'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

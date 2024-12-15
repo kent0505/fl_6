@@ -2,9 +2,9 @@ import 'dart:developer' as developer;
 
 import 'package:intl/intl.dart';
 
-int coins = 100;
+int getTimestamp() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-String formatCoins() {
+String formatCoins(int coins) {
   return NumberFormat("0.00").format(coins);
 }
 

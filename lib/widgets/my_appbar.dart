@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../blocs/coins/coins_bloc.dart';
 import '../settings/settings_screen.dart';
 import '../shop/shop_screen.dart';
 import '../utils.dart';
@@ -100,14 +102,18 @@ class _CoinsCard extends StatelessWidget {
             SizedBox(width: 12),
             SvgPicture.asset('assets/coin.svg'),
             Expanded(
-              child: Text(
-                formatCoins(),
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontFamily: 'w900',
-                ),
+              child: BlocBuilder<CoinsBloc, CoinsState>(
+                builder: (context, state) {
+                  return Text(
+                    state is CoinsLoaded ? formatCoins(state.coins) : '',
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontFamily: 'w900',
+                    ),
+                  );
+                },
               ),
             ),
             SizedBox(width: 12),

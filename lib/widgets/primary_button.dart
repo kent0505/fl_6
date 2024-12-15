@@ -20,13 +20,11 @@ class PrimaryButton extends StatelessWidget {
       height: 52,
       margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: isActive
-            ? Color(0xffF6D303)
-            : Color(0xffF6D303).withValues(alpha: 0.3),
+        color: isActive ? Color(0xffF6D303) : Color(0xff4a4001),
         borderRadius: BorderRadius.circular(52),
       ),
       child: MyButton(
-        onPressed: onPressed,
+        onPressed: isActive ? onPressed : null,
         child: Center(
           child: Text(
             title,
