@@ -28,10 +28,12 @@ class PrimaryButton extends StatelessWidget {
         child: Center(
           child: Text(
             title,
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(0xff140430),
               fontSize: 20,
               fontFamily: 'w900',
+              height: 1.2,
             ),
           ),
         ),

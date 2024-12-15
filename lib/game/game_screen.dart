@@ -1,8 +1,17 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flame/game.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../blocs/coins/coins_bloc.dart';
 import '../widgets/my_button.dart';
 import '../widgets/my_scaffold.dart';
 import '../widgets/primary_button.dart';
+import 'game.dart';
+import 'no_money_dialog.dart';
+import 'win_dialog.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -11,33 +20,121 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen>
+    with SingleTickerProviderStateMixin {
+  late PlinkoGame game;
+  int balls = 1;
+  int bet = 10;
+  List<double> collectedPrizes = [];
   bool isActive = true;
   bool isStandart = true;
-  int betSize = 1;
-  int numberBals = 1;
+  bool isFinishInProgress = false;
 
-  void onBetSize(int value) {
-    betSize = value;
-    print('BET SIZE = $betSize');
+  void _initializeGame() {
+    isFinishInProgress = false;
+    game = PlinkoGame(
+      isGridMode: isStandart,
+      onPrizeCollected: (prize) {
+        collectedPrizes.add(prize);
+        if (collectedPrizes.length == balls && !isFinishInProgress) {
+          isFinishInProgress = true;
+          Future.delayed(Duration(seconds: 1), () {
+            _finishGame();
+          });
+        }
+      },
+      onGameStateChanged: (bool isPlaying) {},
+    );
   }
 
-  void onNumber(int value) {
-    numberBals = value;
-    print('NUMBER BALS = $numberBals');
-  }
-
-  void onTab(int value) {
-    setState(() {
-      if (value == 1) {
-        isStandart = true;
-      } else {
-        isStandart = false;
-      }
+  void _finishGame() async {
+    if (!mounted || !isFinishInProgress) return;
+    isFinishInProgress = true;
+    double totalWin = 0;
+    for (double prize in collectedPrizes) {
+      totalWin += bet * prize;
+    }
+    context.read<CoinsBloc>().add(SaveCoins(amount: totalWin.round()));
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return WinDialog(prize: totalWin);
+      },
+    ).then((value) {
+      setState(() {
+        isActive = true;
+        // coins += totalWin.toInt();
+        collectedPrizes.clear();
+        _initializeGame();
+      });
     });
   }
 
-  void onPlay() {}
+  void _restartGame() {
+    isActive = true;
+    setState(() {
+      _initializeGame();
+      collectedPrizes.clear();
+    });
+  }
+
+  void onBetSize(int value) {
+    bet = value;
+  }
+
+  void onNumber(int value) {
+    balls = value;
+  }
+
+  void onTab(int value) {
+    if (value == 1) {
+      isStandart = true;
+    } else {
+      isStandart = false;
+    }
+    _restartGame();
+  }
+
+  void onPlay() async {
+    final prefs = await SharedPreferences.getInstance();
+    int coins = prefs.getInt('coins') ?? 300;
+
+    if (bet * balls > coins) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return NoMoneyDialog();
+          },
+        );
+      }
+    } else {
+      if (mounted) {
+        context
+            .read<CoinsBloc>()
+            .add(SaveCoins(amount: bet * balls, isBuy: true));
+      }
+      setState(() {
+        isActive = false;
+        coins -= bet * balls;
+        collectedPrizes.clear();
+      });
+      for (int i = 0; i < balls; i++) {
+        if (!mounted) return;
+        game.spawnAndStartBall();
+        if (i < balls - 1) {
+          await Future.delayed(const Duration(milliseconds: 200));
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeGame();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +169,13 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
           ),
-          Spacer(),
-          // game board
+          Expanded(
+            child: Stack(
+              children: [
+                GameWidget(game: game),
+              ],
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
