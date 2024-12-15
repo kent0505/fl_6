@@ -21,9 +21,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
   void onBack() {
     if (page == 1) {
     } else {
-      setState(() {
-        page--;
-      });
+      setState(() => page--);
     }
   }
 
@@ -46,9 +44,6 @@ class _OnboardScreenState extends State<OnboardScreen> {
   void onNext() async {
     if (page == 3) {
       await onSkip();
-      // setState(() {
-      //   page = 1;
-      // });
     } else {
       setState(() {
         page++;

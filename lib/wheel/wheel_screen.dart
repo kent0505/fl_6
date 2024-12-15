@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../blocs/coins/coins_bloc.dart';
-import '../utils.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/rotated_widget.dart';
 
@@ -17,75 +16,63 @@ class WheelScreen extends StatefulWidget {
 }
 
 class _WheelScreenState extends State<WheelScreen> {
-  double turns = 0.0;
-  double angle = 0;
-  String asset = '';
-  bool canSpin = true;
+  double a = 0;
+  double turn = 0.0;
+  bool isActive = true;
 
-  List<double> angles = [
-    1, // 50
-    3, // 100
-    4, // 50
-    5, // 20
-    6, // 100
-    7, // 50
-    8, // 20
-    8.5, // 300
-    10, // 50,
-    12, // 300,
-    15, // 300,
-    16, // 100,
-    17, // 20,
-  ];
+  List<double> aaa = [1, 3, 4, 5, 6, 7, 8, 8.5, 10, 12, 15, 16, 17];
 
   int getWonCoins() {
-    asset = '';
-    if (angle == 1) return 50;
-    if (angle == 3) return 100;
-    if (angle == 4) return 50;
-    if (angle == 5) return 20;
-    if (angle == 6) return 100;
-    if (angle == 7) return 50;
-    if (angle == 8) return 20;
-    if (angle == 8.5) return 300;
-    if (angle == 10) return 50;
-    if (angle == 12) return 300;
-    if (angle == 15) return 300;
-    if (angle == 16) return 100;
-    if (angle == 17) return 20;
+    if (a == 1) return 50;
+    if (a == 3) return 100;
+    if (a == 4) return 50;
+    if (a == 5) return 20;
+    if (a == 6) return 100;
+    if (a == 7) return 50;
+    if (a == 8) return 20;
+    if (a == 8.5) return 300;
+    if (a == 10) return 50;
+    if (a == 12) return 300;
+    if (a == 15) return 300;
+    if (a == 16) return 100;
+    if (a == 17) return 20;
     return 0;
   }
 
   void getRandom() {
     Random random = Random();
-    int randomIndex = random.nextInt(angles.length);
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        angle = angles[randomIndex];
-        logger(angle);
-      });
-    });
+    int randomIndex = random.nextInt(aaa.length);
+    Future.delayed(
+      const Duration(seconds: 3),
+      () => setState(() => a = aaa[randomIndex]),
+    );
   }
 
   void onSpin() async {
     setState(() {
-      turns += 5 / 1;
-      canSpin = false;
+      turn += 5 / 1;
+      isActive = false;
     });
     getRandom();
-    await Future.delayed(const Duration(seconds: 7), () {
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return _WinDialog(amount: getWonCoins());
-            },
-          );
-        }
-      });
-    });
+    await Future.delayed(
+      const Duration(seconds: 7),
+      () {
+        Future.delayed(
+          const Duration(seconds: 1),
+          () {
+            if (mounted) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return _WinDialog(amount: getWonCoins());
+                },
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -101,9 +88,9 @@ class _WheelScreenState extends State<WheelScreen> {
             child: Stack(
               children: [
                 Transform.rotate(
-                  angle: angle,
+                  angle: a,
                   child: AnimatedRotation(
-                    turns: turns,
+                    turns: turn,
                     curve: Curves.easeInOutCirc,
                     duration: const Duration(seconds: 7),
                     child: Stack(
@@ -128,7 +115,7 @@ class _WheelScreenState extends State<WheelScreen> {
           Spacer(),
           PrimaryButton(
             title: 'Spin',
-            isActive: canSpin,
+            isActive: isActive,
             onPressed: onSpin,
           ),
           SizedBox(height: 60),

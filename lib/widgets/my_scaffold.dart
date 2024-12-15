@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../blocs/coins/coins_bloc.dart';
 import '../blocs/internet/internet_bloc.dart';
 import 'bg.dart';
 import 'my_appbar.dart';
@@ -23,7 +24,22 @@ class MyScaffold extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Bg(),
+          BlocBuilder<CoinsBloc, CoinsState>(
+            builder: (context, state) {
+              if (state is CoinsLoaded) {
+                return state.bg == 0
+                    ? Bg()
+                    : Image.asset(
+                        'assets/bg${state.bg}.jpg',
+                        height: double.infinity,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+              }
+
+              return Bg();
+            },
+          ),
           BlocBuilder<InternetBloc, InternetState>(
             builder: (context, state) {
               if (state is InternetFailure) {

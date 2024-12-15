@@ -14,6 +14,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    precacheImage(AssetImage('assets/wheel.png'), context);
+    precacheImage(AssetImage('assets/o1.png'), context);
+    precacheImage(AssetImage('assets/o2.png'), context);
+    precacheImage(AssetImage('assets/o3.png'), context);
+    precacheImage(AssetImage('assets/bg1.jpg'), context);
+    precacheImage(AssetImage('assets/bg2.jpg'), context);
+    precacheImage(AssetImage('assets/bg3.jpg'), context);
+    precacheImage(AssetImage('assets/bg4.jpg'), context);
+    precacheImage(AssetImage('assets/bg5.jpg'), context);
+    precacheImage(AssetImage('assets/bg6.jpg'), context);
+    precacheImage(AssetImage('assets/bg7.jpg'), context);
+    precacheImage(AssetImage('assets/bg8.jpg'), context);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => CoinsBloc()..add(LoadCoins())),
