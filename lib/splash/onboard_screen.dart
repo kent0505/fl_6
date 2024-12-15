@@ -89,22 +89,30 @@ class _OnboardScreenState extends State<OnboardScreen> {
                 flex: 8,
                 child: Stack(
                   children: [
-                    SvgPicture.asset('assets/onboard.svg'),
                     Positioned(
                       bottom: 0,
-                      right: 50,
-                      child: Container(
-                        height: 300,
-                        width: 284,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(284),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xff4400A7),
-                              Color(0xff090034),
-                            ],
+                      right: 0,
+                      left: 0,
+                      child: SvgPicture.asset('assets/onboard.svg'),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      left: 0,
+                      child: Center(
+                        child: Container(
+                          height: 300,
+                          width: 284,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(284),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Color(0xff4400A7),
+                                Color(0xff090034),
+                              ],
+                            ),
                           ),
                         ),
                       ),

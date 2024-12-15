@@ -64,7 +64,6 @@ class _GameScreenState extends State<GameScreen>
     ).then((value) {
       setState(() {
         isActive = true;
-        // coins += totalWin.toInt();
         collectedPrizes.clear();
         _initializeGame();
       });
@@ -158,7 +157,6 @@ class _GameScreenState extends State<GameScreen>
                   isSelected: isStandart,
                   onPressed: onTab,
                 ),
-                Spacer(),
                 _Tab(
                   id: 2,
                   title: 'Hard',
@@ -169,13 +167,16 @@ class _GameScreenState extends State<GameScreen>
               ],
             ),
           ),
+          Spacer(),
           Expanded(
+            flex: 8,
             child: Stack(
               children: [
                 GameWidget(game: game),
               ],
             ),
           ),
+          Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -222,25 +223,26 @@ class _Tab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 42,
-      width: 170,
-      decoration: BoxDecoration(
-        color: isSelected ? Color(0xff6F18FA) : Colors.transparent,
-        borderRadius: BorderRadius.circular(42),
-      ),
-      child: MyButton(
-        onPressed: () {
-          onPressed(id);
-        },
-        minSize: 42,
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontFamily: isSelected ? 'w700' : 'w500',
+    return Expanded(
+      child: Container(
+        height: 42,
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xff6F18FA) : Colors.transparent,
+          borderRadius: BorderRadius.circular(42),
+        ),
+        child: MyButton(
+          onPressed: () {
+            onPressed(id);
+          },
+          minSize: 42,
+          child: Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontFamily: isSelected ? 'w700' : 'w500',
+              ),
             ),
           ),
         ),
