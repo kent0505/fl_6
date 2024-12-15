@@ -1,0 +1,46 @@
+name: fl_6
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+environment:
+  sdk: ^3.6.0
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_bloc: ^8.1.6
+  flutter_svg: ^2.0.16
+  shared_preferences: ^2.3.3
+  intl: ^0.20.1
+  connectivity_plus: ^6.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+  fonts:
+    - family: w300
+      fonts:
+        - asset: assets/NunitoSans_7pt-Light.ttf
+    - family: w400
+      fonts:
+        - asset: assets/NunitoSans_7pt-Regular.ttf
+    - family: w500
+      fonts:
+        - asset: assets/NunitoSans_7pt-Medium.ttf
+    - family: w600
+      fonts:
+        - asset: assets/NunitoSans_7pt-SemiBold.ttf
+    - family: w700
+      fonts:
+        - asset: assets/NunitoSans_7pt-Bold.ttf
+    - family: w800
+      fonts:
+        - asset: assets/NunitoSans_7pt-ExtraBold.ttf
+    - family: w900
+      fonts:
+        - asset: assets/NunitoSans_7pt-Black.ttf
