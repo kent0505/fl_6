@@ -13,10 +13,12 @@ class MyAppbar extends StatelessWidget {
     super.key,
     this.title = '',
     this.isHome = false,
+    this.isGame = false,
   });
 
   final String title;
   final bool isHome;
+  final bool isGame;
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +57,14 @@ class MyAppbar extends StatelessWidget {
                   );
                 },
               ),
+            ] else if (isGame) ...[
+              CircleButton(
+                asset: 'assets/back.svg',
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              _CoinsCard(),
             ] else ...[
               CircleButton(
                 asset: 'assets/back.svg',

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../blocs/coins/coins_bloc.dart';
+import '../game/game_screen.dart';
 import '../utils.dart';
 import '../wheel/wheel_screen.dart';
 import '../widgets/my_button.dart';
@@ -25,7 +26,16 @@ class HomeScreen extends StatelessWidget {
           Spacer(),
           PrimaryButton(
             title: 'Play Game',
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return GameScreen();
+                  },
+                ),
+              );
+            },
           ),
           SizedBox(height: 60),
         ],

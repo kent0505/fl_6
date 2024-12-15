@@ -13,11 +13,13 @@ class MyScaffold extends StatelessWidget {
     required this.body,
     this.title = '',
     this.isHome = false,
+    this.isGame = false,
   });
 
   final Widget body;
   final String title;
   final bool isHome;
+  final bool isGame;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,7 @@ class MyScaffold extends StatelessWidget {
                   MyAppbar(
                     title: title,
                     isHome: isHome,
+                    isGame: isGame,
                   ),
                   Expanded(child: body),
                 ],
