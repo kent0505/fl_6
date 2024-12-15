@@ -1,10 +1,10 @@
-import 'package:fl_6/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home/home_screen.dart';
-import '../widgets/my_scaffold.dart';
+import '../utils.dart';
+import '../widgets/bg.dart';
 import 'onboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,8 +18,9 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
 
-  void _init() async {
+  void init() async {
     final prefs = await SharedPreferences.getInstance();
+    // await prefs.clear();
     bool isOnboard = prefs.getBool('isOnboard') ?? true;
     Future.delayed(
       const Duration(seconds: 2),
@@ -47,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat();
-    _init();
+    init();
   }
 
   @override
@@ -58,12 +59,17 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-      body: Center(
-        child: RotationTransition(
-          turns: controller,
-          child: SvgPicture.asset('assets/loader.svg'),
-        ),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Bg(),
+          Center(
+            child: RotationTransition(
+              turns: controller,
+              child: SvgPicture.asset('assets/loader.svg'),
+            ),
+          ),
+        ],
       ),
     );
   }
